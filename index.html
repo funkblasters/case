@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Case</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --tomato:         #fe4a49;
+      --mustard:        #fed766;
+      --pacific-blue:   #009fb7;
+      --alabaster-grey: #e6e6ea;
+      --ghost-white:    #f4f4f8;
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--ghost-white);
+      color: #1a1a1a;
+      padding: 0 1rem 2rem;
+      padding-top: 5rem;
+    }
+
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: var(--ghost-white);
+      border-bottom: 1px solid var(--alabaster-grey);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2rem;
+      padding: 0.9rem 1rem;
+      flex-wrap: wrap;
+    }
+
+    h1 { font-size: 1.6rem; font-weight: 700; color: #2c2c2c; flex: 1; }
+
+    .nav { display: flex; align-items: center; gap: 0.6rem; }
+
+    @media (max-width: 600px) {
+      body { padding-bottom: 5rem; }
+
+      .nav {
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        background: var(--ghost-white);
+        border-top: 1px solid var(--alabaster-grey);
+        padding: 0.7rem 1.5rem;
+        justify-content: space-between;
+        z-index: 100;
+      }
+    }
+
+    .nav button {
+      background: #fff;
+      border: 1px solid var(--alabaster-grey);
+      border-radius: 8px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: #1a1a1a;
+      transition: background 0.15s;
+    }
+    .nav button:hover:not(:disabled) { background: var(--alabaster-grey); }
+    .nav button:disabled { opacity: 0.35; cursor: default; }
+
+    .nav-date { font-size: 0.95rem; font-weight: 600; min-width: 130px; text-align: center; color: #444; }
+    .nav-count { font-size: 0.8rem; color: #888; }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      transition: opacity 0.2s;
+      position: relative;
+    }
+
+    .card.is-good    { order: -1; box-shadow: 0 0 0 2px var(--pacific-blue), 0 1px 4px rgba(0,0,0,0.08); }
+    .card.is-removed { order:  1; opacity: 0.35; }
+
+    .card-image { width: 100%; height: 200px; object-fit: cover; display: block; }
+    .card-body { padding: 1.4rem; }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.8rem;
+    }
+
+    .card-title { font-size: 1rem; font-weight: 600; line-height: 1.3; flex: 1; margin-right: 1rem; }
+    .card-title a { color: #1a1a1a; text-decoration: none; }
+    .card-title a:hover { text-decoration: underline; }
+
+    .score-total {
+      background: #1a1a1a;
+      color: #fff;
+      border-radius: 8px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .score-total.high { background: var(--pacific-blue); color: #fff; }
+    .score-total.mid  { background: var(--mustard);      color: #1a1a1a; }
+    .score-total.low  { background: var(--tomato);       color: #fff; }
+
+    .description { font-size: 0.88rem; color: #555; margin-bottom: 1rem; line-height: 1.5; }
+
+    .categories {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .category { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; }
+    .cat-label { color: #666; }
+    .cat-score { font-weight: 600; font-size: 0.85rem; }
+    .cat-score.s-high { color: var(--pacific-blue); }
+    .cat-score.s-mid  { color: #b89200; }
+    .cat-score.s-low  { color: var(--tomato); }
+
+    .card-actions {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.6rem;
+      display: flex;
+      gap: 0.4rem;
+      z-index: 10;
+    }
+
+    .btn-action {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+      transition: background 0.15s, transform 0.1s;
+      color: #555;
+    }
+
+    .btn-action:hover { transform: scale(1.1); }
+
+    .btn-good.active   { background: var(--pacific-blue); color: #fff; }
+    .btn-remove.active { background: var(--tomato);       color: #fff; }
+
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 1rem;
+      color: #888;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Case</h1>
+    <div class="nav">
+      <button id="btn-prev">&#8592;</button>
+      <div>
+        <div class="nav-date" id="nav-date"></div>
+        <div class="nav-count" id="nav-count"></div>
+      </div>
+      <button id="btn-next">&#8594;</button>
+    </div>
+  </header>
+  <div class="cards" id="cards"></div>
+
+  <script>
+    const SUPABASE_URL = "https://kojlktbagtcpdyniqyvc.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_-qqroF59-d-WeXO0QVHxFA_EZ0XQ8g2";
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const CATEGORIES = [
+      { key: "prezzo",     label: "Prezzo" },
+      { key: "posizione",  label: "Posizione" },
+      { key: "luminosita", label: "Luminosità" },
+      { key: "trasporti",  label: "Trasporti" },
+      { key: "stato",      label: "Stato immobile" },
+    ];
+
+    // ── DATA (populated by the daily agent) ───────────────────────────────────
+    const houses = [];
+    // ─────────────────────────────────────────────────────────────────────────
+
+    function scoreClass(s) { return s >= 7 ? "high" : s >= 5 ? "mid" : "low"; }
+    function avg(scores) {
+      const vals = Object.values(scores);
+      return (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1);
+    }
+    function fmtDate(d) {
+      return new Date(d + "T12:00:00").toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    }
+
+    const days = [...new Set(houses.map(h => h.date))].sort();
+    let currentDay = days[days.length - 1];
+    let states = {};
+
+    function visibleDays() {
+      return days.filter(day => houses.some(h => h.date === day && states[h.url] !== "removed"));
+    }
+
+    const container = document.getElementById("cards");
+    const navDate   = document.getElementById("nav-date");
+    const navCount  = document.getElementById("nav-count");
+    const btnPrev   = document.getElementById("btn-prev");
+    const btnNext   = document.getElementById("btn-next");
+
+    async function setState(url, newState) {
+      const prev = states[url];
+      if (prev === newState) {
+        await db.from("states").delete().eq("url", url);
+        delete states[url];
+      } else {
+        await db.from("states").upsert({ url, state: newState });
+        states[url] = newState;
+      }
+      const vd = visibleDays();
+      if (!vd.includes(currentDay)) currentDay = vd[vd.length - 1] ?? days[days.length - 1];
+      applyStates();
+      updateNav();
+    }
+
+    function applyStates() {
+      document.querySelectorAll(".card[data-url]").forEach(card => {
+        const s = states[card.dataset.url];
+        card.classList.toggle("is-good",    s === "good");
+        card.classList.toggle("is-removed", s === "removed");
+        card.querySelector(".btn-good").classList.toggle("active",   s === "good");
+        card.querySelector(".btn-remove").classList.toggle("active", s === "removed");
+      });
+    }
+
+    function updateNav() {
+      const vd  = visibleDays();
+      const idx = vd.indexOf(currentDay);
+      navDate.textContent  = fmtDate(currentDay);
+      navCount.textContent = `${houses.filter(h => h.date === currentDay && states[h.url] !== "removed").length} annunci`;
+      btnPrev.disabled = idx <= 0;
+      btnNext.disabled = idx >= vd.length - 1;
+    }
+
+    function renderDay(day) {
+      currentDay = day;
+      const batch = houses.filter(h => h.date === day).sort((a, b) => avg(b.scores) - avg(a.scores));
+      updateNav();
+
+      container.innerHTML = "";
+      if (batch.length === 0) {
+        container.innerHTML = `<div class="empty">Nessun annuncio per questo giorno.</div>`;
+        return;
+      }
+      batch.forEach(h => {
+        const mean = avg(h.scores);
+        const card = document.createElement("div");
+        card.className = "card";
+        card.dataset.url = h.url;
+
+        const catRows = CATEGORIES.map(c => {
+          const s = h.scores[c.key] ?? "–";
+          const cls = typeof s === "number" ? `s-${scoreClass(s)}` : "";
+          return `<div class="category"><span class="cat-label">${c.label}</span><span class="cat-score ${cls}">${s}/10</span></div>`;
+        }).join("");
+
+        card.innerHTML = `
+          <div class="card-actions">
+            <button class="btn-action btn-good" title="Interessante">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+            <button class="btn-action btn-remove" title="Rimuovi">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+          ${h.image ? `<img class="card-image" src="${h.image}" alt="${h.title}" loading="lazy" />` : ""}
+          <div class="card-body">
+            <div class="card-header">
+              <div class="card-title"><a href="${h.url}" target="_blank" rel="noopener">${h.title}</a></div>
+              <div class="score-total ${scoreClass(Math.round(mean))}">${mean}</div>
+            </div>
+            <p class="description">${h.description}</p>
+            <div class="categories">${catRows}</div>
+          </div>`;
+
+        card.querySelector(".btn-good").addEventListener("click", () => setState(h.url, "good"));
+        card.querySelector(".btn-remove").addEventListener("click", () => {
+          if (states[h.url] === "removed" || confirm("Rimuovere questa casa dalla lista?")) setState(h.url, "removed");
+        });
+
+        container.appendChild(card);
+      });
+
+      applyStates();
+    }
+
+    btnPrev.addEventListener("click", () => {
+      const vd = visibleDays();
+      const idx = vd.indexOf(currentDay);
+      if (idx > 0) renderDay(vd[idx - 1]);
+    });
+    btnNext.addEventListener("click", () => {
+      const vd = visibleDays();
+      const idx = vd.indexOf(currentDay);
+      if (idx < vd.length - 1) renderDay(vd[idx + 1]);
+    });
+
+    async function init() {
+      const { data } = await db.from("states").select("url, state");
+      if (data) data.forEach(row => { states[row.url] = row.state; });
+      if (houses.length === 0) {
+        document.querySelector(".nav").style.display = "none";
+        container.innerHTML = `<div class="empty">Nessun annuncio ancora. Il prossimo aggiornamento arriverà oggi alle 19:00.</div>`;
+        return;
+      }
+      const vd = visibleDays();
+      currentDay = vd[vd.length - 1] ?? days[days.length - 1];
+      renderDay(currentDay);
+    }
+
+    init();
+  </script>
+</body>
+</html>
