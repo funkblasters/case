@@ -200,7 +200,36 @@
     ];
 
     // ── DATA (populated by the daily agent) ───────────────────────────────────
-    const houses = [];
+    const houses = [
+    {
+      date: "2026-07-09",
+      title: "Via delle Rovare, San Fruttuoso",
+      url: "https://www.immobiliare.it/annunci/111996671/",
+      outdoor: "terrazza",
+      description: "Trilocale di 112mq al secondo e ultimo piano in piccola palazzina di soli 6 unità, contesto privato con cancello a pochi passi da Via Donghi. Ingresso, doppio soggiorno luminoso, cucina con accesso al balcone, 2 camere, bagno e ripostiglio. Bella terrazza superiore con accesso indipendente esposta a sud, dotata di impianto elettrico. Riscaldamento autonomo, spese basse, esposizione su 3 lati, molto luminoso. Possibilità di affittare posto auto adiacente. Prezzo €189.000.",
+      scores: {
+        prezzo:     8,
+        posizione:  7,
+        luminosita: 9,
+        trasporti:  7,
+        stato:      6,
+      }
+    },
+    {
+      date: "2026-07-09",
+      title: "Via G. Rossetti 10D, Quarto Priaruggia",
+      url: "https://www.immobiliare.it/annunci/115793513/",
+      outdoor: "terrazza",
+      description: "Trilocale ristrutturato di 82mq in ottimo stato (aggiornato dic 2024), a 200m dalla spiaggia di Quarto. Ingresso, soggiorno, 2 camere, cucina abitabile, bagno completo, ripostiglio. Grande balcone e porzione di terrazzo condominiale attrezzato al piano superiore (condiviso, non esclusivo — verificare). Primo piano, riscaldamento autonomo. Prezzo ~€220.000 da confermare direttamente.",
+      scores: {
+        prezzo:     6,
+        posizione:  7,
+        luminosita: 6,
+        trasporti:  8,
+        stato:      9,
+      }
+    },
+    ];
     // ─────────────────────────────────────────────────────────────────────────
 
     function scoreClass(s) { return s >= 7 ? "high" : s >= 5 ? "mid" : "low"; }
