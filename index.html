@@ -74,7 +74,10 @@
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      /* min(340px, 100%) caps the column floor at the container width, so a
+         phone narrower than 340px+padding gets one full-width column instead
+         of a fixed-340px track that overflows and clips at the screen edge. */
+      grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
       gap: 1.5rem;
     }
 
@@ -219,611 +222,14 @@
       { key: "stato",      label: "Stato immobile" },
     ];
 
-    // ── DATA (populated by the daily agent) ───────────────────────────────────
-    const houses = [
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Ponterotto, Marassi, Genova",
-    url: "https://www.immobiliare.it/annunci/120446628/",
-    image: "https://pwm.im-cdn.it/image/1703033328/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Classe immobile economica 109mq. Prezzo: €199.000.",
-    scores: {
-      prezzo:     7,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via A.Robino, 81, Marassi, Genova",
-    url: "https://www.immobiliare.it/annunci/130559076/",
-    image: "https://pwm.im-cdn.it/image/1960805340/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media 90mq. Prezzo: €89.000.",
-    scores: {
-      prezzo:     10,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Ayroli, San Fruttuoso, Genova",
-    url: "https://www.immobiliare.it/annunci/80591503/",
-    image: "https://pwm.im-cdn.it/image/1957201030/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media 80mq. Prezzo: €135.000.",
-    scores: {
-      prezzo:     10,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale ottimo stato, terzo piano, Marassi, Genova",
-    url: "https://www.immobiliare.it/annunci/129276382/",
-    image: "https://pwm.im-cdn.it/image/1929043052/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media 100mq. Prezzo: €200.000.",
-    scores: {
-      prezzo:     7,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Attico via Giuseppe Piantelli 8, Staglieno, Genova",
-    url: "https://www.immobiliare.it/annunci/126873007/",
-    image: "https://pwm.im-cdn.it/image/1871633107/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Attico | Intera proprietà | Classe immobile media 81mq. Ripostiglio presente. Prezzo: €122.000.",
-    scores: {
-      prezzo:     10,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Giovanni XXIII, San Fruttuoso, Genova",
-    url: "https://www.immobiliare.it/annunci/129237576/",
-    image: "https://pwm.im-cdn.it/image/1928116958/m-c.jpg",
-    outdoor: "giardino",
-    description: "Trilocale | Intera proprietà | Classe immobile signorile 100mq. Prezzo: €248.000.",
-    scores: {
-      prezzo:     5,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Cesare Cabella 22D, Castelletto, Genova",
-    url: "https://www.immobiliare.it/annunci/129871978/",
-    image: "https://pwm.im-cdn.it/image/1944008374/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media 105mq. Ripostiglio presente. Prezzo: €125.000.",
-    scores: {
-      prezzo:     10,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Raffaele Pieragostini 15, Sampierdarena, Genova",
-    url: "https://www.immobiliare.it/annunci/130044044/",
-    image: "https://pwm.im-cdn.it/image/1948196738/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media 91mq. Prezzo: €93.000.",
-    scores: {
-      prezzo:     10,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Loano, Pegli, Genova",
-    url: "https://www.immobiliare.it/annunci/130755478/",
-    image: "https://pwm.im-cdn.it/image/1965000222/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media 86mq. Prezzo: €135.000.",
-    scores: {
-      prezzo:     10,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Mario Piana, Cornigliano, Genova",
-    url: "https://www.immobiliare.it/annunci/119785180/",
-    image: "https://pwm.im-cdn.it/image/1682892810/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media 76mq. Prezzo: €80.000.",
-    scores: {
-      prezzo:     10,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Borgoratti 24, Borgoratti, Genova",
-    url: "https://www.immobiliare.it/annunci/130693402/",
-    image: "https://pwm.im-cdn.it/image/1963666196/m-c.jpg",
-    outdoor: "giardino",
-    description: "Trilocale | Intera proprietà | Classe immobile media 96mq. Ripostiglio presente. Prezzo: €215.000.",
-    scores: {
-      prezzo:     6,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Franco Antolini 14, San Fruttuoso, Genova",
-    url: "https://www.immobiliare.it/annunci/130130852/",
-    image: "https://pwm.im-cdn.it/image/1950500672/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media 79mq. Prezzo: €89.000.",
-    scores: {
-      prezzo:     10,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via isonzo, Sturla, Genova",
-    url: "https://www.immobiliare.it/annunci/129985138/",
-    image: "https://pwm.im-cdn.it/image/1946658044/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media 83mq. Prezzo: €185.000.",
-    scores: {
-      prezzo:     8,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Buratella 30, Borgoratti, Genova",
-    url: "https://www.immobiliare.it/annunci/129668540/",
-    image: "https://pwm.im-cdn.it/image/1938862090/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media 82mq. Ripostiglio presente. Prezzo: €198.000.",
-    scores: {
-      prezzo:     7,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Brenta, Sturla, Genova",
-    url: "https://www.immobiliare.it/annunci/129477624/",
-    image: "https://pwm.im-cdn.it/image/1934165698/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media 75mq. Prezzo: €187.000.",
-    scores: {
-      prezzo:     8,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via al Garbo 12A, Rivarolo, Genova",
-    url: "https://www.immobiliare.it/annunci/129489390/",
-    image: "https://pwm.im-cdn.it/image/1934430170/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile signorile 90mq. Prezzo: €118.000.",
-    scores: {
-      prezzo:     10,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Chiaravagna 18, Sestri Ponente, Genova",
-    url: "https://www.immobiliare.it/annunci/129087738/",
-    image: "https://pwm.im-cdn.it/image/1924409006/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media 99mq. Ripostiglio presente. Prezzo: €115.000.",
-    scores: {
-      prezzo:     10,
-      posizione:  8,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Carnia 35, Rivarolo, Genova",
-    url: "https://www.immobiliare.it/annunci/127972316/",
-    image: "https://pwm.im-cdn.it/image/1897327856/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media Prezzo: €93.000. Presenza di terrazza.",
-    scores: {
-      prezzo:     10,
-      posizione:  5,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via San Martino 6A, San Martino, Genova",
-    url: "https://www.immobiliare.it/annunci/124443389/",
-    image: "https://pwm.im-cdn.it/image/1812753111/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile signorile Prezzo: €213.000. Presenza di terrazza.",
-    scores: {
-      prezzo:     6,
-      posizione:  5,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Maggiolo di Nervi, Nervi, Genova",
-    url: "https://www.immobiliare.it/annunci/128558206/",
-    image: "https://pwm.im-cdn.it/image/1911729872/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media Prezzo: €180.000. Presenza di terrazza.",
-    scores: {
-      prezzo:     8,
-      posizione:  5,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Maggiolo di Nervi, Nervi, Genova",
-    url: "https://www.immobiliare.it/annunci/128552626/",
-    image: "https://pwm.im-cdn.it/image/1911610220/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media Prezzo: €150.000. Presenza di terrazza.",
-    scores: {
-      prezzo:     9,
-      posizione:  5,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Monte Sei Busi, Rivarolo, Genova",
-    url: "https://www.immobiliare.it/annunci/126865373/",
-    image: "https://pwm.im-cdn.it/image/1870851423/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media Prezzo: €79.000. Presenza di terrazza.",
-    scores: {
-      prezzo:     10,
-      posizione:  5,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via dei Landi 16, Sampierdarena, Genova",
-    url: "https://www.immobiliare.it/annunci/129402884/",
-    image: "https://pwm.im-cdn.it/image/1932204580/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile signorile Prezzo: €97.000. Presenza di terrazza.",
-    scores: {
-      prezzo:     10,
-      posizione:  5,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Emanuele Canesi 61, Sestri Ponente, Genova",
-    url: "https://www.immobiliare.it/annunci/130725008/",
-    image: "https://pwm.im-cdn.it/image/1964443830/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media Prezzo: €139.000. Presenza di terrazza.",
-    scores: {
-      prezzo:     10,
-      posizione:  5,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Parma, Pegli, Genova",
-    url: "https://www.immobiliare.it/annunci/128823184/",
-    image: "https://pwm.im-cdn.it/image/1918205632/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile media Prezzo: €149.000. Presenza di terrazza.",
-    scores: {
-      prezzo:     10,
-      posizione:  5,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Trilocale via Galata, San Vincenzo, Genova",
-    url: "https://www.immobiliare.it/annunci/128864838/",
-    image: "https://pwm.im-cdn.it/image/1919117936/m-c.jpg",
-    outdoor: "terrazza",
-    description: "Trilocale | Intera proprietà | Classe immobile signorile Prezzo: €249.000. Presenza di terrazza.",
-    scores: {
-      prezzo:     5,
-      posizione:  5,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-  {
-    date: "2026-07-09",
-    title: "Attico corso Alessandro De Stefanis 55, Staglieno, Genova",
-    url: "https://www.immobiliare.it/annunci/130710838/",
-    image: "https://pwm.im-cdn.it/image/1964119662/m-c.jpg",
-    outdoor: "giardino",
-    description: "Attico | Intera proprietà | Classe immobile media Prezzo: €149.000. Presenza di giardino.",
-    scores: {
-      prezzo:     10,
-      posizione:  5,
-      luminosita: 5,
-      trasporti:  6,
-      stato:      5,
-    }
-  },
-    {
-      date: "2026-07-09",
-      title: "Viale Pio VII 33, Quarto dei Mille",
-      url: "https://www.immobiliare.it/annunci/118217691/",
-      outdoor: "giardino",
-      description: "Trilocale 105mq al primo piano nel Villaggio dei Fiori di Quarto, vendita privata senza agenzia. Grande giardino privato personalizzabile con due terrazze e accesso diretto dalla cucina e dallo studio/cameretta. Soggiorno doppio, camera matrimoniale, studio/cameretta con uscita giardino, bagno; posto auto, riscaldamento centralizzato, persiane motorizzate e allarme. Prezzo non pubblicato — stimato €200-250k dal mercato di Viale Pio VII; verificare prima di contattare il venditore.",
-      scores: {
-        prezzo:     6,
-        posizione:  7,
-        luminosita: 7,
-        trasporti:  7,
-        stato:      8,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via Donghi, San Fruttuoso",
-      url: "https://www.tecnocasa.it/vendita/appartamenti/genova/genova/61109771.html",
-      outdoor: "giardino",
-      description: "Trilocale 60mq al piano terra in San Fruttuoso: ingresso blindato, cucina abitabile con accesso diretto a giardino terrazzato privato di ~40mq, due camere matrimoniali, bagno con doccia. Parzialmente ristrutturato; zona servita da AMT con collegamento rapido al centro e ospedale San Martino. Prezzo €129.000 (trattabili). Da verificare in sopralluogo: luminosità e apertura del giardino data la posizione al piano terra in Via Donghi.",
-      scores: {
-        prezzo:     8,
-        posizione:  6,
-        luminosita: 5,
-        trasporti:  8,
-        stato:      5,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via Giulio Tanini 17, Borgoratti",
-      url: "https://www.immobiliare.it/annunci/115338575/",
-      outdoor: "giardino",
-      description: "Trilocale 112mq al piano terra senza ascensore in Borgoratti: ingresso, cucina abitabile, soggiorno, camera matrimoniale, cameretta singola, bagno con doccia e riscaldamento autonomo. Giardino privato di 40mq esposto a ovest — spazio verde esclusivo in zona Tier 1. Prezzo non pubblicato, stimato ~€130-155k in linea col mercato di Via Tanini; verificare disponibilità e condizioni reali.",
-      scores: {
-        prezzo:    8,
-        posizione: 7,
-        luminosita: 6,
-        trasporti: 7,
-        stato:     6,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via Borgoratti, Borgoratti",
-      url: "https://www.immobiliare.it/annunci/90034753/",
-      outdoor: "terrazza",
-      description: "Trilocale 110mq all'ammezzato in elegante palazzo anni '60 a Borgoratti (altezza Carlini): ingresso, cucina abitabile, 2 camere, bagno, riscaldamento centralizzato (€150/mese). Terrazza con vista sul verde; il retro del palazzo in questo tratto di via Borgoratti tipicamente si apre sulla collina — verificare luminosità e apertura reali prima della visita. €150.000.",
-      scores: {
-        prezzo:    8,
-        posizione: 6,
-        luminosita: 5,
-        trasporti: 8,
-        stato:     7,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via ai Monti d'Orecchia, Apparizione",
-      url: "https://www.immobiliare.it/annunci/120531776/",
-      outdoor: "terrazza",
-      description: "Trilocale sulle prime alture di Apparizione in via ai Monti d'Orecchia — zona Tier 1 tipicamente aperta con panorama sulla val Bisagno e verso il mare. Spazio esterno segnalato (terrazza o giardino). Prezzo non verificabile da remoto; la via parte da €129.000 per abitazioni simili, stima probabile €130-200k. Verificare numero camere, outdoor e prezzo prima di contattare l'agenzia.",
-      scores: {
-        prezzo:    6,
-        posizione: 8,
-        luminosita: 7,
-        trasporti: 5,
-        stato:     5,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via dei Frati, Apparizione",
-      url: "https://www.immobiliare.it/annunci/118941131/",
-      outdoor: "terrazza",
-      description: "Trilocale in via dei Frati ad Apparizione — colline Tier 1 immerse nel verde delle prime alture di Genova levante. Spazio esterno segnalato. Prezzo e numero di camere non verificabili da remoto; prezzi medi in zona ~€1.900/mq, trilocale stimato €120-180k. Verificare tutti i dettagli (outdoor, camere, prezzo) prima della visita.",
-      scores: {
-        prezzo:    6,
-        posizione: 8,
-        luminosita: 7,
-        trasporti: 5,
-        stato:     5,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via Bottini, Sturla",
-      url: "https://www.immobiliare.it/annunci/117666267/",
-      outdoor: "giardino",
-      description: "Piano terra nella parte iniziale di Via Bottini a Sturla: terrazza a livello e giardino piantumato esposto a sud, con forno a legna e barbecue. Appartamento in buono stato con infissi PVC doppio vetro, climatizzazione e riscaldamento centralizzato con valvole termostatiche. Prezzo €190.000 — l'annuncio cita esplicitamente una camera matrimoniale; verificare presenza di seconda camera.",
-      scores: {
-        prezzo:    7,
-        posizione: 8,
-        luminosita: 8,
-        trasporti: 8,
-        stato:     7,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via Borgoratti 42A, San Martino",
-      url: "https://www.immobiliare.it/annunci/98841142/",
-      outdoor: "giardino",
-      description: "Trilocale 88mq al piano rialzato in palazzina del 1960 a Borgoratti: ingresso, soggiorno, 2 camere, cucina, bagno, con piccolo giardino frontale e bella vista aperta su cielo libero. Riscaldamento autonomo, spese condominiali ~€150/mese, accessi pedonali comodi alla viabilità principale. Prezzo €135.000.",
-      scores: {
-        prezzo:    9,
-        posizione: 7,
-        luminosita: 7,
-        trasporti: 7,
-        stato:     6,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via Apparizione 17, Borgoratti",
-      url: "https://www.immobiliare.it/annunci/107161943/",
-      outdoor: "giardino",
-      description: "Trilocale 56mq in una delle zone più quiete e panoramiche di Apparizione, con giardino privato esclusivo di 110mq. Esposizione sud-est, vista aperta su verde e mare, condizioni interne perfette, riscaldamento autonomo, venduto arredato. Prezzo non pubblicato — stimato ~€90-110k; le camere saranno compatte per la metratura.",
-      scores: {
-        prezzo:    7,
-        posizione: 9,
-        luminosita: 9,
-        trasporti: 5,
-        stato:     8,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via Erpidio Berno 71, San Fruttuoso",
-      url: "https://www.immobiliare.it/annunci/113457313/",
-      outdoor: "terrazza",
-      description: "Trilocale 75mq al piano terra con terrazza-giardino pensile di ~100mq e tripla esposizione. Soggiorno-cucina con accesso all'esterno, 2 camere, bagno finestrato; riscaldamento centralizzato, palazzina in buone condizioni, a pochi passi dal capolinea bus 46. Prezzo non pubblicato — stimato €130-150k dalla zona.",
-      scores: {
-        prezzo:    7,
-        posizione: 7,
-        luminosita: 8,
-        trasporti: 8,
-        stato:     6,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via Federico Donaver, San Fruttuoso",
-      url: "https://www.immobiliare.it/annunci/116626953/",
-      outdoor: "giardino",
-      description: "Trilocale 87mq al piano terra con ascensore a San Fruttuoso: ingresso, soggiorno, cucina, 2 camere, bagno, ripostiglio e piccolo giardino vivibile, cantina inclusa. Prezzo €72.000 eccezionalmente basso — probabile necessità di ristrutturazione; verificare condizioni reali e dimensione effettiva del giardino prima di visitare.",
-      scores: {
-        prezzo:    10,
-        posizione: 6,
-        luminosita: 5,
-        trasporti: 7,
-        stato:     4,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via Fabbrica e Valle, Sestri Levante",
-      url: "https://www.immobiliare.it/annunci/129356630/",
-      outdoor: "terrazza",
-      description: "Trilocale in ottimo stato al piano terra con posto auto, terrazza e riscaldamento autonomo a Sestri Levante.",
-      scores: {
-        prezzo: 6,
-        posizione: 5,
-        luminosita: 5,
-        trasporti: 7,
-        stato: 8,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via delle Rovare, San Fruttuoso",
-      url: "https://www.immobiliare.it/annunci/111996671/",
-      outdoor: "terrazza",
-      description: "Trilocale di 112mq al secondo e ultimo piano in piccola palazzina di soli 6 unità, contesto privato con cancello a pochi passi da Via Donghi. Ingresso, doppio soggiorno luminoso, cucina con accesso al balcone, 2 camere, bagno e ripostiglio. Bella terrazza superiore con accesso indipendente esposta a sud, dotata di impianto elettrico. Riscaldamento autonomo, spese basse, esposizione su 3 lati, molto luminoso. Possibilità di affittare posto auto adiacente. Prezzo €189.000.",
-      scores: {
-        prezzo:     8,
-        posizione:  7,
-        luminosita: 9,
-        trasporti:  7,
-        stato:      6,
-      }
-    },
-    {
-      date: "2026-07-09",
-      title: "Via G. Rossetti 10D, Quarto Priaruggia",
-      url: "https://www.immobiliare.it/annunci/115793513/",
-      outdoor: "terrazza",
-      description: "Trilocale ristrutturato di 82mq in ottimo stato (aggiornato dic 2024), a 200m dalla spiaggia di Quarto. Ingresso, soggiorno, 2 camere, cucina abitabile, bagno completo, ripostiglio. Grande balcone e porzione di terrazzo condominiale attrezzato al piano superiore (condiviso, non esclusivo — verificare). Primo piano, riscaldamento autonomo. Prezzo ~€220.000 da confermare direttamente.",
-      scores: {
-        prezzo:     6,
-        posizione:  7,
-        luminosita: 6,
-        trasporti:  8,
-        stato:      9,
-      }
-    },
-    ];
-    // ─────────────────────────────────────────────────────────────────────────
+    // ── DATA ───────────────────────────────────────────────────────────────────
+    // `lightRows` holds just {url, date} for every listing — enough to compute
+    // which days exist and which are still visible (not fully removed) without
+    // pulling every day's full description/image/scores over the wire.
+    // `houses` holds the FULL rows for whichever single day is on screen; it's
+    // replaced on every day navigation instead of being loaded once for all days.
+    let lightRows = [];
+    let houses = [];
 
     function scoreClass(s) { return s >= 7 ? "high" : s >= 5 ? "mid" : "low"; }
     function avg(scores) {
@@ -834,12 +240,12 @@
       return new Date(d + "T12:00:00").toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
     }
 
-    const days = [...new Set(houses.map(h => h.date))].sort();
-    let currentDay = days[days.length - 1];
+    let days = [];
+    let currentDay = null;
     let states = {};
 
     function visibleDays() {
-      return days.filter(day => houses.some(h => h.date === day && states[h.url] !== "removed"));
+      return days.filter(day => lightRows.some(r => r.date === day && states[r.url] !== "removed"));
     }
 
     const container = document.getElementById("cards");
@@ -858,9 +264,15 @@
         states[url] = newState;
       }
       const vd = visibleDays();
-      if (!vd.includes(currentDay)) currentDay = vd[vd.length - 1] ?? days[days.length - 1];
-      applyStates();
-      updateNav();
+      if (!vd.includes(currentDay)) {
+        // The day we were on just lost its last visible listing — jump to
+        // another day and actually fetch/render it (previously this only
+        // updated the nav label, leaving stale cards on screen).
+        await renderDay(vd[vd.length - 1] ?? days[days.length - 1]);
+      } else {
+        applyStates();
+        updateNav();
+      }
     }
 
     function applyStates() {
@@ -877,15 +289,18 @@
       const vd  = visibleDays();
       const idx = vd.indexOf(currentDay);
       navDate.textContent  = fmtDate(currentDay);
-      navCount.textContent = `${houses.filter(h => h.date === currentDay && states[h.url] !== "removed").length} annunci`;
+      navCount.textContent = `${lightRows.filter(r => r.date === currentDay && states[r.url] !== "removed").length} annunci`;
       btnPrev.disabled = idx <= 0;
       btnNext.disabled = idx >= vd.length - 1;
     }
 
-    function renderDay(day) {
+    async function renderDay(day) {
       currentDay = day;
-      const batch = houses.filter(h => h.date === day).sort((a, b) => avg(b.scores) - avg(a.scores));
       updateNav();
+
+      const { data } = await db.from("listings").select("*").eq("date", day);
+      houses = data || [];
+      const batch = [...houses].sort((a, b) => avg(b.scores) - avg(a.scores));
 
       container.innerHTML = "";
       if (batch.length === 0) {
@@ -950,16 +365,22 @@
     });
 
     async function init() {
-      const { data } = await db.from("states").select("url, state");
-      if (data) data.forEach(row => { states[row.url] = row.state; });
-      if (houses.length === 0) {
+      const [{ data: lightData }, { data: stateRows }] = await Promise.all([
+        db.from("listings").select("url, date"),
+        db.from("states").select("url, state"),
+      ]);
+      lightRows = lightData || [];
+      if (stateRows) stateRows.forEach(row => { states[row.url] = row.state; });
+
+      days = [...new Set(lightRows.map(r => r.date))].sort();
+      if (lightRows.length === 0) {
         document.querySelector(".nav").style.display = "none";
         container.innerHTML = `<div class="empty">Nessun annuncio ancora. Il prossimo aggiornamento arriverà oggi alle 19:00.</div>`;
         return;
       }
       const vd = visibleDays();
       currentDay = vd[vd.length - 1] ?? days[days.length - 1];
-      renderDay(currentDay);
+      await renderDay(currentDay);
     }
 
     init();
